@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Net;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Game : MonoBehaviour
@@ -18,6 +19,9 @@ public class Game : MonoBehaviour
     [SerializeField, Min(0)] private float _sensitivity = 0.05f;
 
     [SerializeField] private Predictor _predictor;
+    [SerializeField] private BallCollisionHandler _ballCollision;
+
+    private float _cooldown;
 
     private Vector3 _playerRacketPosition;
     private Thrower _thrower = new Thrower();
@@ -25,10 +29,14 @@ public class Game : MonoBehaviour
     private void Awake()
     {
         _predictor.Prepare();
+        _ballCollision.CollisionEntered += ThrowPlayerToEnemy;
     }
 
     private void Update()
     {
+        if (_cooldown > 0)
+            _cooldown -= Time.deltaTime;
+
         if (Input.GetKeyDown(KeyCode.Mouse0))
             StartGame();
 
@@ -46,6 +54,11 @@ public class Game : MonoBehaviour
 
     private void ThrowPlayerToEnemy()
     {
+        if (_cooldown > 0)
+            return;
+
+        _cooldown = 0.1f;
+
         Vector3 endPoint = _zones[0].GetRandomPointInZone();
         _ball.SetVelocity(_thrower.CalculateVelosityByHeight(_ball.transform.position, endPoint, _height));
 
