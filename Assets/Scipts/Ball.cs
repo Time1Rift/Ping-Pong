@@ -14,7 +14,5 @@ public class Ball : MonoBehaviour
 
     public void SetVelocity(Vector3 velocity) => _rigidbody.velocity = velocity;
 
-    public Vector3 GetPosition() => _transform.position;
-
     public void SetPosition(Vector3 startPoint) => _transform.position = startPoint;
 }
